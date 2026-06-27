@@ -1,46 +1,31 @@
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.Events;
-using TMPro;
 using PixDash.Player;
 
 namespace PixDash.UI
 {
     public class HealthBarUI : MonoBehaviour
     {
-        public Health health;
-        public Image fillImage;
-        public TextMeshProUGUI healthText;
+        private Health playerHealth;
 
         private void Start()
         {
-            if (health != null)
+            // Busca al jugador en la escena de forma segura
+            Player.Player player = Object.FindFirstObjectByType<Player.Player>();
+            if (player != null)
             {
-                health.onHealthChanged.AddListener(UpdateHealthBar);
-                UpdateHealthBar(health.currentHealth);
+                playerHealth = player.GetComponent<Health>();
+                if (playerHealth != null)
+                {
+                    // Nos conectamos al nuevo evento de vidas
+                    playerHealth.onLivesChanged.AddListener(UpdateLivesDisplay);
+                }
             }
         }
 
-        private void UpdateHealthBar(int currentHealth)
+        private void UpdateLivesDisplay(int currentLives)
         {
-            if (fillImage != null && health != null)
-            {
-                float fillAmount = (float)currentHealth / health.maxHealth;
-                fillImage.fillAmount = fillAmount;
-            }
-
-            if (healthText != null && health != null)
-            {
-                healthText.text = $"{currentHealth} / {health.maxHealth}";
-            }
-        }
-
-        private void OnDestroy()
-        {
-            if (health != null)
-            {
-                health.onHealthChanged.RemoveListener(UpdateHealthBar);
-            }
+            // Por ahora solo muestra en la consola cuántas vidas quedan
+            Debug.Log($"[UI] El corazón de la interfaz sabe que te quedan: {currentLives} vidas.");
         }
     }
 }

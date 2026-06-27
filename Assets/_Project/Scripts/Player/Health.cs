@@ -5,42 +5,86 @@ namespace PixDash.Player
 {
     public class Health : MonoBehaviour
     {
-    public int maxHealth = 100;
-    public int currentHealth;
-    public bool isDead = false;
+        public int maxLives = 3;
+        public int currentLives;
+        public bool isDead = false;
 
-        public UnityEvent<int> onHealthChanged = new UnityEvent<int>();
+        public UnityEvent<int> onLivesChanged = new UnityEvent<int>();
         public UnityEvent onDeath = new UnityEvent();
 
-    private void Start()
-    {
-        currentHealth = maxHealth;
-        onHealthChanged?.Invoke(currentHealth);
-    }
+        private Vector3 startPosition;
+        private Rigidbody2D rb;
 
-    public void TakeDamage(int amount)
-    {
-        if (isDead) return;
-
-        currentHealth -= amount;
-        currentHealth = Mathf.Max(currentHealth, 0);
-
-        Debug.Log($"<color=red>Player took {amount} damage!</color> Current Health: {currentHealth}");
-        onHealthChanged?.Invoke(currentHealth);
-
-        if (currentHealth <= 0)
+        private void Start()
         {
-            Die();
-        }
-    }
+            currentLives = maxLives;
+            onLivesChanged?.Invoke(currentLives); 
 
-        private void Die()
+            startPosition = transform.position;
+            rb = GetComponent<Rigidbody2D>();
+        }
+
+        // Nueva función para el botón 'K': Restablece todo y vuelve al inicio sin penalización
+        public void ResetToStartFullHealth()
+        {
+            if (isDead) return;
+
+            currentLives = maxLives; // Vuelve a tener 3 vidas completas
+            onLivesChanged?.Invoke(currentLives);
+
+            RespawnPlayer();
+            Debug.Log($"[Prueba K] Jugador reiniciado al inicio con vida completa: {currentLives}/{maxLives}");
+        }
+
+        // Esta se mantiene para la caída real del precipicio
+        public void KillByPrecipice()
+        {
+            if (isDead) return;
+
+            currentLives -= 1;
+            currentLives = Mathf.Max(currentLives, 0);
+
+            Debug.Log($"¡El jugador cayó al vacío! Vidas restantes: {currentLives}");
+            onLivesChanged?.Invoke(currentLives);
+
+            if (currentLives <= 0)
+            {
+                DieCompletely();
+            }
+            else
+            {
+                RespawnPlayer();
+            }
+        }
+
+        private void RespawnPlayer()
+        {
+            // Cambiado por 'velocity' clásico para evitar incompatibilidades en tu versión
+            if (rb != null)
+            {
+                rb.linearVelocity = Vector2.zero;
+            }
+
+            transform.position = startPosition;
+            Debug.Log("Jugador teletransportado a la posición inicial.");
+        }
+
+        private void DieCompletely()
         {
             if (isDead) return;
 
             isDead = true;
-            Debug.Log($"<color=black><b>{gameObject.name} has died!</b></color>");
+            Debug.Log("¡GAME OVER! Ya no quedan vidas.");
             onDeath?.Invoke();
+
+            // Esto buscará el script nuevo que acabamos de crear y activará el cartel
+            GameOverMenu menu = Object.FindFirstObjectByType<GameOverMenu>();
+            if (menu != null)
+            {
+                menu.ActivarMenuGameOver();
+            }
+
+            Time.timeScale = 0f; // Congela el juego
         }
     }
 }
