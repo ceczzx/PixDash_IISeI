@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class MenuPrincipalSystem : MonoBehaviour
+public class MenuSystem : MonoBehaviour
 {
     public void Jugar()
     {
@@ -13,4 +13,3 @@ public class MenuPrincipalSystem : MonoBehaviour
         Aplication.Quit();
     }
 }
- 
