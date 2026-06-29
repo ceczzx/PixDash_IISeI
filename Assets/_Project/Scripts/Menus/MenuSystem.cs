@@ -10,6 +10,6 @@ public class MenuSystem : MonoBehaviour
 
     public void Salir()
     {
-        Aplication.Quit();
+        Application.Quit();
     }
 }
