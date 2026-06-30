@@ -1,6 +1,6 @@
 using UnityEngine;
 using PixDash.Player;
-
+using UnityEngine.SceneManagement;
 public class DeathZone : MonoBehaviour
 {
     // Unity ejecuta esto automáticamente cuando algo cruza el Box Collider 2D (Is Trigger)

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 namespace PixDash.Player
 {
@@ -50,6 +51,7 @@ namespace PixDash.Player
             if (currentLives <= 0)
             {
                 DieCompletely();
+				SceneManager.LoadScene("MenuPerdiste");
             }
             else
             {
@@ -75,8 +77,8 @@ namespace PixDash.Player
 
             isDead = true;
             Debug.Log("¡GAME OVER! Ya no quedan vidas.");
-            onDeath?.Invoke();
-
+            onDeath.Invoke();
+			
             // Esto buscará el script nuevo que acabamos de crear y activará el cartel
             GameOverMenu menu = Object.FindFirstObjectByType<GameOverMenu>();
             if (menu != null)
@@ -84,7 +86,7 @@ namespace PixDash.Player
                 menu.ActivarMenuGameOver();
             }
 
-            Time.timeScale = 0f; // Congela el juego
+            
         }
     }
 }
